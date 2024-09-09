@@ -153,4 +153,5 @@ const styles = StyleSheet.create({
     color: 'yellow',
     marginLeft: 10,
   },
+  //added pin feature
 });
