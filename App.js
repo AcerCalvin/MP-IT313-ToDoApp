@@ -12,16 +12,14 @@ export default function App() {
 
   const addTask = () => {
     if (text.trim()) {
-      setTasks([...tasks, { id: Date.now().toString(), task: text }]);
+      setTasks([...tasks, { id: Date.now().toString(), task: text, pinned: false }]);
       resetInput();
     }
   };
 
   const editTask = () => {
     if (text.trim()) {
-      setTasks(tasks.map(task =>
-        task.id === editingTaskId ? { ...task, task: text } : task
-      ));
+      setTasks(tasks.map(task => task.id === editingTaskId ? { ...task, task: text } : task));
       resetInput();
     }
   };
@@ -37,7 +35,9 @@ export default function App() {
     resetInput();
   };
 
-  const cancelAction = () => resetInput();
+  const pinTask = (taskId) => {
+    setTasks(tasks.map(task => task.id === taskId ? { ...task, pinned: !task.pinned } : task));
+  };
 
   const resetInput = () => {
     setText('');
@@ -48,6 +48,9 @@ export default function App() {
   const renderTask = ({ item }) => (
     <View style={styles.taskItem}>
       <Text style={styles.taskText}>{item.task}</Text>
+      <TouchableOpacity onPress={() => pinTask(item.id)}>
+        <Text style={styles.pinButton}>{item.pinned ? "Unpin" : "Pin"}</Text>
+      </TouchableOpacity>
       <TouchableOpacity onPress={() => startEditing(item)}>
         <Text style={styles.editButton}>Edit</Text>
       </TouchableOpacity>
@@ -60,6 +63,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>To Do List</Text>
+
       <TextInput
         style={styles.input}
         onChangeText={handleTextChange}
@@ -67,26 +71,23 @@ export default function App() {
         placeholder="Enter a task"
         placeholderTextColor="#aaa"
       />
-      <View style={styles.buttonContainer}>
-        {(isEditing || text.trim()) && (
-          <Button title="Cancel" onPress={cancelAction} color="red" />
-        )}
-        {text.trim() && (
-          <Button
-            title={isEditing ? "Edit Task" : "Add Task"}
-            onPress={isEditing ? editTask : addTask}
-            color="green"
-          />
-        )}
-      </View>
+
+      {text.trim() && (
+        <View style={styles.buttonContainer}>
+          <Button title="Cancel" onPress={resetInput} color="red" />
+          <Button title={isEditing ? "Edit Task" : "Add Task"} onPress={isEditing ? editTask : addTask} color="green" />
+        </View>
+      )}
+
       {tasks.length > 0 && (
         <FlatList
-          data={tasks}
+          data={tasks.sort((a, b) => b.pinned - a.pinned)}
           renderItem={renderTask}
           keyExtractor={item => item.id}
           style={styles.taskList}
         />
       )}
+
       <StatusBar style="light" />
     </View>
   );
@@ -138,8 +139,11 @@ const styles = StyleSheet.create({
   },
   taskText: {
     color: 'white',
-    fontSize: 16,
     flex: 1,
+  },
+  pinButton: {
+    color: '#00ff00',
+    marginLeft: 10,
   },
   deleteButton: {
     color: 'red',
@@ -149,4 +153,5 @@ const styles = StyleSheet.create({
     color: 'yellow',
     marginLeft: 10,
   },
+  //added pin feature
 });
