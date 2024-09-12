@@ -164,11 +164,11 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   deleteButton: {
-    color: 'ff0000',
+    color: '#ff0000',
     marginLeft: 10,
   },
   editButton: {
-    color: 'f0ff00',
+    color: '#f0ff00',
     marginLeft: 10,
   },
 });
